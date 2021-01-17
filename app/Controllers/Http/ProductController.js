@@ -7,6 +7,9 @@
 /**
  * Resourceful controller for interacting with products
  */
+
+ const Product = use('App/Models/Product');
+ const ProductCompany = use('App/Models/ProductCompany');
 class ProductController {
   /**
    * Show a list of all products.
@@ -18,6 +21,26 @@ class ProductController {
    * @param {View} ctx.view
    */
   async index ({ request, response, view }) {
+
+
+    try {
+      const queryData = request.get();
+      const type = queryData.type;
+      const zone = queryData.zone;
+
+      const products = Product
+      .query()
+      .with('companies', (builder) =>
+         builder.select('id', 'name', 'address', 'phone1', 'zone'));
+      
+      if(!!type)
+        products.where('type','=', type)
+      
+      const responseData = await products.fetch()
+      return response.status(200).send(responseData);
+     } catch (error) {
+       return response.status(400).send({error})
+     }
   }
 
   /**
@@ -41,6 +64,25 @@ class ProductController {
    * @param {Response} ctx.response
    */
   async store ({ request, response }) {
+    const product = request.all();
+
+    try {
+     const productResponse = await Product.create(product)
+     return response.status(201).send(productResponse);
+    } catch (error) {
+      return response.status(400).send({error})
+    }
+  }
+
+  async storeProductInfo ({ request, response }) {
+    const data = request.all();
+    try {
+      const {companyId: company_id, productId: product_id, price} = data;
+     const productCompany = await ProductCompany.create({company_id, product_id, price})
+     return response.status(201).send(productCompany);
+    } catch (error) {
+      return response.status(400).send({error})
+    }
   }
 
   /**
@@ -53,6 +95,9 @@ class ProductController {
    * @param {View} ctx.view
    */
   async show ({ params, request, response, view }) {
+    const product = await Product.findOrFail(params.id);
+
+    return product;
   }
 
   /**
@@ -76,6 +121,15 @@ class ProductController {
    * @param {Response} ctx.response
    */
   async update ({ params, request, response }) {
+    const product = await Product.findOrFail(params.id)
+
+    const data = request.all();
+
+    product.merge(data);
+
+    await product.save();
+
+    return product;
   }
 
   /**
@@ -87,6 +141,9 @@ class ProductController {
    * @param {Response} ctx.response
    */
   async destroy ({ params, request, response }) {
+    const product = Product.findOrFail(params.id);
+
+    await product.delete()
   }
 }
 

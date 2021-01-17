@@ -23,3 +23,8 @@ Route.get('/', () => {
 Route.group(() => {
   Route.resource('companies', 'CompanyController').apiOnly();
 })
+
+Route.group(() => {
+  Route.resource('products', 'ProductController').apiOnly();
+})
+Route.post('/product-info', 'ProductController.storeProductInfo');

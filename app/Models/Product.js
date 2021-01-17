@@ -4,6 +4,12 @@
 const Model = use('Model')
 
 class Product extends Model {
+    companies () {
+        return this
+          .belongsToMany('App/Models/Company')
+          .pivotTable('product_companies')
+          .withPivot(['price'])
+      }
 }
 
 module.exports = Product
