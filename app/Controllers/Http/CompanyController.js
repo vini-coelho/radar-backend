@@ -109,7 +109,7 @@ class CompanyController {
    * @param {Response} ctx.response
    */
   async destroy ({ params, request, response }) {
-    const company = Company.findOrFail(params.id);
+    const company = await Company.findOrFail(params.id);
 
     await company.delete()
   }

@@ -7,6 +7,12 @@
 /**
  * Resourceful controller for interacting with productcompanies
  */
+
+const ProductCompany = use('App/Models/ProductCompany');
+const Company = use('App/Models/Company');
+const Product = use('App/Models/Product');
+
+
 class ProductCompanyController {
   /**
    * Show a list of all productcompanies.
@@ -41,8 +47,20 @@ class ProductCompanyController {
    * @param {Response} ctx.response
    */
   async store ({ request, response }) {
+    const data = request.all();
+    try {
+      const {companyId: company_id, productId: product_id, price} = data;
+      const company = await Company.find(company_id)
+      if(!company) throw ("Loja não existe!");
+      const product = await Product.find(product_id)
+      if(!product) throw ("Produto não existe!");
+      const productCompany = await ProductCompany.create({company_id, product_id, price})
+     return response.status(201).send(productCompany);
+    } catch (error) {
+      return response.status(400).send({error})
+    }
   }
-
+  
   /**
    * Display a single productcompany.
    * GET productcompanies/:id
@@ -76,6 +94,24 @@ class ProductCompanyController {
    * @param {Response} ctx.response
    */
   async update ({ params, request, response }) {
+    const data = request.all();
+    try {
+      const productCompany = await ProductCompany.find(params.id)
+      if (!productCompany) throw ("Relação inexistente!, falha ao encontrar productCompanyId:"+ params.id)
+
+      const {companyId: company_id, productId: product_id, price} = data;
+      const company = await Company.find(company_id)
+      if(!company) throw ("Loja não existe!");
+      const product = await Product.find(product_id)
+      if(!product) throw ("Produto não existe!");
+
+      productCompany.merge({companyId: company_id, productId: product_id, price})
+
+      await productCompany.save()
+     return response.status(200).send(productCompany);
+    } catch (error) {
+      return response.status(400).send({error})
+    }
   }
 
   /**
@@ -87,6 +123,15 @@ class ProductCompanyController {
    * @param {Response} ctx.response
    */
   async destroy ({ params, request, response }) {
+    try {
+      const productCompany = await ProductCompany.find(params.id);
+      if (!productCompany) throw ("Relação inexistente!, falha ao encontrar productCompanyId:"+ params.id)
+      await productCompany.delete()
+      const message = `relação de id: ${params.id} apagada!`
+      return response.status(200).send({message})
+    } catch (error) {
+      return response.status(400).send({error})
+    }
   }
 }
 

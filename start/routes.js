@@ -27,4 +27,7 @@ Route.group(() => {
 Route.group(() => {
   Route.resource('products', 'ProductController').apiOnly();
 })
-Route.post('/product-info', 'ProductController.storeProductInfo');
+
+Route.group(() => {
+  Route.resource('product-info', 'ProductCompanyController').apiOnly();
+})

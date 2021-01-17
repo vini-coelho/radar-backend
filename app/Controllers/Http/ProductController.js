@@ -9,7 +9,6 @@
  */
 
  const Product = use('App/Models/Product');
- const ProductCompany = use('App/Models/ProductCompany');
 class ProductController {
   /**
    * Show a list of all products.
@@ -74,17 +73,6 @@ class ProductController {
     }
   }
 
-  async storeProductInfo ({ request, response }) {
-    const data = request.all();
-    try {
-      const {companyId: company_id, productId: product_id, price} = data;
-     const productCompany = await ProductCompany.create({company_id, product_id, price})
-     return response.status(201).send(productCompany);
-    } catch (error) {
-      return response.status(400).send({error})
-    }
-  }
-
   /**
    * Display a single product.
    * GET products/:id
@@ -141,7 +129,7 @@ class ProductController {
    * @param {Response} ctx.response
    */
   async destroy ({ params, request, response }) {
-    const product = Product.findOrFail(params.id);
+    const product = await Product.findOrFail(params.id);
 
     await product.delete()
   }
