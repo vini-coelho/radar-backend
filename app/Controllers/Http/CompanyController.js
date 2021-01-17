@@ -4,6 +4,8 @@
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
+const Company = use('App/Models/Company');
+
 /**
  * Resourceful controller for interacting with companies
  */
@@ -18,6 +20,9 @@ class CompanyController {
    * @param {View} ctx.view
    */
   async index ({ request, response, view }) {
+    const companies = await Company.all()
+
+    return companies;
   }
 
   /**
@@ -41,6 +46,9 @@ class CompanyController {
    * @param {Response} ctx.response
    */
   async store ({ request, response }) {
+    const company = request.all();
+
+    await Company.create(company);
   }
 
   /**
@@ -53,6 +61,9 @@ class CompanyController {
    * @param {View} ctx.view
    */
   async show ({ params, request, response, view }) {
+    const company = await Company.findOrFail(params.id);
+
+    return company;
   }
 
   /**
@@ -76,6 +87,15 @@ class CompanyController {
    * @param {Response} ctx.response
    */
   async update ({ params, request, response }) {
+    const company = await Company.findOrFail(params.id)
+
+    const data = request.all();
+
+    company.merge(data);
+
+    await company.save();
+
+    return company;
   }
 
   /**
@@ -87,6 +107,9 @@ class CompanyController {
    * @param {Response} ctx.response
    */
   async destroy ({ params, request, response }) {
+    const company = Company.findOrFail(params.id);
+
+    await company.delete()
   }
 }
 
