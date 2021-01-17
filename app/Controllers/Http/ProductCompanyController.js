@@ -100,12 +100,13 @@ class ProductCompanyController {
       if (!productCompany) throw ("Relação inexistente!, falha ao encontrar productCompanyId:"+ params.id)
 
       const {companyId: company_id, productId: product_id, price} = data;
+
       const company = await Company.find(company_id)
       if(!company) throw ("Loja não existe!");
       const product = await Product.find(product_id)
       if(!product) throw ("Produto não existe!");
 
-      productCompany.merge({companyId: company_id, productId: product_id, price})
+      productCompany.merge({company_id, product_id, price})
 
       await productCompany.save()
      return response.status(200).send(productCompany);
