@@ -46,9 +46,11 @@ class CompanyController {
    * @param {Response} ctx.response
    */
   async store ({ request, response }) {
-    const company = request.all();
+    const data = request.all();
 
-    await Company.create(company);
+    const company = await Company.create(data);
+
+    return company;
   }
 
   /**
