@@ -26,17 +26,28 @@ class ProductController {
       const queryData = request.get();
       const type = queryData.type;
       const zone = queryData.zone;
+      const orderPrice = queryData.orderPrice == 'desc' ? 'desc': 'asc';
 
       const products = Product
       .query()
       .with('companies', (builder) =>
-         builder.select('id', 'name', 'address', 'phone1', 'zone'));
+         builder.select('id', 'name', 'address', 'phone1', 'zone')
+         .orderBy('price', orderPrice)
+         );
       
       if(!!type)
         products.where('type','=', type)
       
-      const responseData = await products.fetch()
-      return response.status(200).send(responseData);
+      let fetchedData = await products.fetch()
+      if(!!zone) {
+        const res = JSON.parse(JSON.stringify(fetchedData))
+        fetchedData = res.map(element => {
+        const compa=element.companies.filter(el=>el.zone ===zone)
+         if(compa.length > 0) return {...element, companies: compa};
+          else return null
+        }).filter(el=>!!el);
+      }
+      return response.status(200).send(fetchedData);
      } catch (error) {
        return response.status(400).send({error})
      }
