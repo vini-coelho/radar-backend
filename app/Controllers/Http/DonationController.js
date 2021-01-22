@@ -4,6 +4,8 @@
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
+const Donation = use('App/Models/Donation');
+
 /**
  * Resourceful controller for interacting with donations
  */
@@ -18,6 +20,9 @@ class DonationController {
    * @param {View} ctx.view
    */
   async index ({ request, response, view }) {
+    const companies = await Donation.all()
+
+    return companies;
   }
 
   /**
@@ -41,6 +46,11 @@ class DonationController {
    * @param {Response} ctx.response
    */
   async store ({ request, response }) {
+    const data = request.all();
+
+    const donation = await Donation.create(data);
+
+    return donation;
   }
 
   /**
@@ -53,6 +63,9 @@ class DonationController {
    * @param {View} ctx.view
    */
   async show ({ params, request, response, view }) {
+    const donation = await Donation.findOrFail(params.id);
+
+    return donation;
   }
 
   /**
@@ -76,6 +89,15 @@ class DonationController {
    * @param {Response} ctx.response
    */
   async update ({ params, request, response }) {
+    const donation = await Donation.findOrFail(params.id)
+
+    const data = request.all();
+
+    donation.merge(data);
+
+    await donation.save();
+
+    return donation;
   }
 
   /**
@@ -87,6 +109,9 @@ class DonationController {
    * @param {Response} ctx.response
    */
   async destroy ({ params, request, response }) {
+    const donation = await Donation.findOrFail(params.id);
+
+    await donation.delete()
   }
 }
 
