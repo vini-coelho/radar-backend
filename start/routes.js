@@ -31,3 +31,7 @@ Route.group(() => {
 Route.group(() => {
   Route.resource('product-info', 'ProductCompanyController').apiOnly();
 })
+
+Route.group(() => {
+  Route.resource('donations', 'DonationController').apiOnly();
+})
