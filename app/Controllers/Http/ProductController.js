@@ -31,7 +31,7 @@ class ProductController {
       const products = Product
       .query()
       .with('companies', (builder) =>
-         builder.select('id', 'name', 'address', 'phone1', 'zone', 'instagram')
+         builder.select('id', 'name', 'address', 'phone1', 'zone', 'instagram', 'hasWaitingList')
          .orderBy('price', orderPrice)
          );
       
