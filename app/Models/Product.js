@@ -8,7 +8,7 @@ class Product extends Model {
         return this
           .belongsToMany('App/Models/Company')
           .pivotTable('product_companies')
-          .withPivot(['price'])
+          .withPivot(['price', 'id'])
       }
 }
 
