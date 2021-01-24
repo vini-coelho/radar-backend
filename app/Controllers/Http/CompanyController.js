@@ -20,9 +20,15 @@ class CompanyController {
    * @param {View} ctx.view
    */
   async index ({ request, response, view }) {
-    const companies = await Company.all()
+    const queryData = request.get();
+    const type = queryData.type;
 
-    return companies;
+    const companies = Company.query()
+
+    if(!!type)
+    companies.where('type','=', type)
+
+    return await companies.fetch();
   }
 
   /**
