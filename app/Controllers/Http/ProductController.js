@@ -26,12 +26,13 @@ class ProductController {
       const queryData = request.get();
       const type = queryData.type;
       const zone = queryData.zone;
+      const companyType = queryData.companyType;
       const orderPrice = queryData.orderPrice == 'desc' ? 'desc': 'asc';
 
       const products = Product
       .query()
       .with('companies', (builder) =>
-         builder.select('id', 'name', 'address', 'phone1', 'zone', 'instagram', 'hasWaitingList')
+         builder.select('id', 'name', 'address', 'phone1', 'zone', 'instagram', 'hasWaitingList', 'type')
          .orderBy('price', orderPrice)
          );
       
@@ -43,6 +44,14 @@ class ProductController {
         const res = JSON.parse(JSON.stringify(fetchedData))
         fetchedData = res.map(element => {
         const compa=element.companies.filter(el=>el.zone ===zone)
+         if(compa.length > 0) return {...element, companies: compa};
+          else return null
+        }).filter(el=>!!el);
+      }
+      if(!!companyType) {
+        const res = JSON.parse(JSON.stringify(fetchedData))
+        fetchedData = res.map(element => {
+        const compa=element.companies.filter(el=>el.type ===companyType)
          if(compa.length > 0) return {...element, companies: compa};
           else return null
         }).filter(el=>!!el);
